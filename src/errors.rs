@@ -299,6 +299,13 @@ pub enum RvError {
         source: tokio::task::JoinError,
     },
 
+    #[cfg(feature = "storage_sqlx")]
+    #[error("Some sqlx error happened, {:?}", .source)]
+    SqlxError {
+        #[from]
+        source: sqlx::Error,
+    },
+
     #[error("Some string utf8 error happened, {:?}", .source)]
     StringUtf8Error {
         #[from]
@@ -311,8 +318,22 @@ pub enum RvError {
         source: lockfile::Error,
     },
 
+    #[error("Database type is not supported now. Please try MySQL again.")]
+    ErrDatabaseTypeInvalid,
+    #[cfg(feature = "storage_mysql")]
+    #[error("Database connection pool occurs errors when creating, {:?}", .source)]
+    ErrConnectionPoolCreate {
+        #[from]
+        source: r2d2::Error,
+    },
     #[error("Database connection info invalid")]
     ErrDatabaseConnectionInfoInvalid,
+    #[cfg(feature = "storage_mysql")]
+    #[error("Failed to execute entry with database, {:?}", .source)]
+    ErrDatabaseExecuteEntry {
+        #[from]
+        source: diesel::result::Error,
+    },
 
     #[error("Some etcd client error happened, {:?}", .source)]
     EtcdClientError {

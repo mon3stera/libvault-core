@@ -25,7 +25,11 @@ use crate::errors::RvError;
 pub mod barrier;
 pub mod barrier_aes_gcm;
 pub mod barrier_view;
+#[cfg(feature = "storage_mysql")]
+pub mod mysql;
 pub mod physical;
+#[cfg(feature = "storage_sqlx")]
+pub mod sqlx;
 pub mod xline;
 
 /// A trait that abstracts core methods for all storage barrier types.
@@ -83,6 +87,16 @@ pub fn new_backend(t: &str, conf: &HashMap<String, Value>) -> Result<Arc<dyn Bac
     match t {
         "file" => {
             let backend = physical::file::FileBackend::new(conf)?;
+            Ok(Arc::new(backend))
+        }
+        #[cfg(feature = "storage_mysql")]
+        "mysql" => {
+            let backend = mysql::mysql_backend::MysqlBackend::new(conf)?;
+            Ok(Arc::new(backend))
+        }
+        #[cfg(feature = "storage_sqlx")]
+        "sqlx" => {
+            let backend = sqlx::SqlxBackend::new(conf)?;
             Ok(Arc::new(backend))
         }
         "xline" => {

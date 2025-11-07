@@ -1,5 +1,5 @@
 [package]
-name = "libvault"
+name = "libvault-core"
 version = "0.1.0"
 edition = "2024"
 authors = ["rk8s-dev team"]
@@ -58,6 +58,11 @@ lockfile = "0.4.0"
 arc-swap = "1"
 blake3 = "1.8"
 
+diesel = { version = "2.1.4", features = ["mysql", "r2d2"], optional = true }
+r2d2 = { version = "0.8.9", optional = true }
+r2d2-diesel = { version = "1.0.0", optional = true }
+sqlx = { version = "0.8", optional = true, default-features = true, features = ["macros", "mysql", "postgres", "sqlite", "any", "runtime-tokio", "chrono", "uuid", "json", "bigdecimal"] }
+
 itertools = "0.14.0"
 etcd-client = { version = "0.16.1", features = ["tls"] }
 tracing = "0.1.41"
@@ -76,6 +81,8 @@ toml = "0.8.19"
 
 [features]
 default = ["crypto_adaptor_openssl"]
+storage_mysql = ["dep:diesel", "dep:r2d2", "dep:r2d2-diesel"]
+storage_sqlx = ["dep:sqlx"]
 crypto_adaptor_openssl = ["dep:openssl", "dep:openssl-sys"]
 crypto_adaptor_tongsuo = ["dep:openssl", "dep:openssl-sys"]
 
